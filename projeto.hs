@@ -48,6 +48,11 @@ compareMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | z1 > z2 = LT
                                                    | (z1 == z2) && (y1 == y2) && (x1 < x2) = GT
                                                    | otherwise = EQ
 
+compareVars :: (Char,Int) -> (Char,Int) -> Ordering
+compareVars (x1,y1) (x2,y2) | x1 > x2 = GT
+                            | x1 < x2 = LT
+                            | otherwise = EQ
+
 degree :: Moni -> Int
 degree (Moni _ [(_,x)]) = x
 
@@ -57,9 +62,17 @@ variable (Moni _ [(x,_)]) = x
 coeficient :: Moni -> Int
 coeficient (Moni x [(_,_)]) = x
 
+mergePoli :: Poli -> Poli -> Poli
+mergePoli [] [] = []
+mergePoli x [] = x
+mergePoli [] x = x
+mergePoli (x:xs) (y:ys) = x : y : mergePoli xs ys
+
+
 sortPoli :: Poli -> Poli
 sortPoli [] = []
 sortPoli x = sortBy (\(Moni x1 y1) (Moni x2 y2) -> compareMoni (Moni x1 y1) (Moni x2 y2)) x
+
 
 internalSum :: Poli -> Poli
 internalSum [] = []
@@ -80,19 +93,25 @@ sumMoni :: Moni -> Moni -> Moni
 sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
                                              | otherwise = error "Couldn't sum these monomials"
 
-sumPoli :: Poli -> Poli -> Poli
-sumPoli [] [] = []
-sumPoli [] x = x
-sumPoli x [] = x
-sumPoli (x:xs) (y:ys) | (variable x == variable y) && (degree x == degree y) = [sumMoni x y] ++ sumPoli xs ys
-                      | otherwise = sumPoli (x:xs) ys ++ sumPoli xs (y:ys)
+sumAuxPoli :: Poli -> Poli -> Poli
+sumAuxPoli (x:xs) (y:ys) = internalSum (mergePoli (x:xs) (y:ys))
 
+
+sumPoli :: Poli -> Poli -> String
+sumPoli (x:xs) (y:ys) = tellPoli (sumAuxPoli (x:xs) (y:ys))
 --------------------------------------------------------------------------------
 --c)
 
+
+
+prodAuxVars :: (Char,Int) -> (Char,Int) -> (Char,Int)
+prodAuxVars (x1,y1) (x2,y2) | x1 == x2 = (x1,y1+y2)
+
+prodVars :: [(Char,Int)] -> [(Char,Int)] -> [(Char,Int)]
+prodVars p1 p2 = [ prodAuxVars (x1,y1) (x2,y2) | (x1,y1) <- p1, (x2,y2) <- p2, x1 == x2]
+
 prodMoni :: Moni -> Moni -> Moni
-prodMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | y1 == y2 = (Moni (x1 * x2) [(y1,z1 + z2)])
-                                                  | otherwise = (Moni (x1 * x2) [(y1,z1),(y2,z2)])
+prodMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 * x2) (prodVars vars1 vars2))
 
 prodPoli :: Poli -> Poli -> String
 prodPoli [] _ = []
