@@ -93,17 +93,8 @@ sumMoni :: Moni -> Moni -> Moni
 sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
                                                     | otherwise = error "Couldn't sum these monomials"
 
-<<<<<<< HEAD
 sumAuxPoli :: Poli -> Poli -> Poli
 sumAuxPoli (x:xs) (y:ys) = internalSum (mergePoli (x:xs) (y:ys))
-=======
-sumPoli :: Poli -> Poli -> Poli
-sumPoli [] [] = []
-sumPoli [] x = x
-sumPoli x [] = x
-sumPoli (x:xs) (y:ys) | (variable x == variable y) && (degree x == degree y) = sumMoni x y : sumPoli xs ys
-                      | otherwise = sumPoli (x:xs) ys ++ sumPoli xs (y:ys)
->>>>>>> bac72aaf82cba0182adf8bfae24e0ca77c8c566d
 
 
 sumPoli :: Poli -> Poli -> String
