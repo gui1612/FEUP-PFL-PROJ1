@@ -27,19 +27,21 @@ tellVars [] = ""
 tellVars [x] | snd x == 0                   = ""
              | snd x == 1                   = [fst x]
              | otherwise                    = [fst x] ++ "^" ++ show (snd x)
-tellVars (x:xs) = "(" ++ [fst x] ++ "^" ++ show (snd x) ++ ")*" ++ tellVars xs --acontece 2*(x^2)*(y)*z por ex.
+tellVars (x:xs) | snd x == 1 = [fst x] ++ "*" ++ tellVars xs --acontece 2*(x^2)*(y)*z por ex.
+                | snd x > 1 = [fst x] ++ "^" ++ show (snd x) ++ "*" ++ tellVars xs
 
 tellMoni :: Moni -> String
 tellMoni (Moni {coef = c, vars = v}) | c == 0                       = "0"
-                                     | c == 1                       = tellVars v
-                                     | c < 0 && (tellVars v /= "" ) = "(" ++ show c ++ ")*" ++ tellVars v
-                                     | c < 0 && (tellVars v == "")  = "(" ++ show c ++ ")"
-                                     | c > 0 && (tellVars v == "")  = show c
-                                     | otherwise                    = show c ++ "*" ++ tellVars v
+                                     | c == 1                       = vars
+                                     | c < 0 && (vars /= "" )       = "(" ++ show c ++ ")*" ++ vars
+                                     | c < 0 && (vars == "")        = "(" ++ show c ++ ")"
+                                     | c > 0 && (vars == "")        = show c
+                                     | otherwise                    = show c ++ "*" ++ vars
+                                     where vars = tellVars v
 
--- tellPoli :: Poli -> String
+tellPoli :: Poli -> String
 -- tellPoli [] = ""
--- tellPoli 
+-- tellPoli
 
 
 tellPoli [] = ""
@@ -70,7 +72,7 @@ compareMoni x1 x2    | degX1 > degX2                    = LT
                            varX2  = variable x2
 
 -- compareMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | z1 > z2                               = LT
---                                                      |  
+--                                                      |
 
 
 --                                                      | z1 > z2                               = LT
@@ -181,24 +183,28 @@ findCoef x = [digitToInt y | y <- takeWhile isDigit x]
 -- Tirar coeficiente
 -- Chegar até ao 1o grau
 -- Passar para o proximo elemento
-
+findAuxVars :: [Char] -> (Char,Int)
+findAuxVars x | length x == 1 = (head x,1)
+              | otherwise = (var,digitToInt degree)
+              where var = head x
+                    degree = last x
 
 findVars :: [Char] -> [(Char,Int)]
-findDegree [] = 1
-findDegree x    | isDigit (head x)          = findDegree filteredMoni
-                | otherwise                 =  
-    
-    
-    takeWhile (/= '*') (tail (dropWhile (\n -> n /= '^') aux))
-            where aux = tail ( dropWhile (/= '^') x)
-                  next = tail (dropWhile () Text)
-                  next_deg = takeWhile (/= '*') (tail (dropWhile (\n -> n /= '^') aux))
-                  filteredMoni = tail (dropWhile (/= '*') x)
+findVars [] = []
+findVars x    | isDigit (head x)          = (findAuxVars digitAux) : (findVars digitNext)
+              | otherwise                 = (findAuxVars aux) : (findVars next)
+              where filteredMoni = tail (dropWhile (/= '*') x)
+                    aux = takeWhile (\n -> n /= '*') x
+                    digitAux = takeWhile (\n -> n /= '*') filteredMoni
+                    next = drop 1 (dropWhile (\n -> n /= '*') x )
+                    digitNext = drop 1 (dropWhile (\n -> n /= '*') filteredMoni)
+
+
 -- findDegree [] = 1
--- findDegree x   | takeWhile (\n -> isDi) Text 
+-- findDegree x   | takeWhile (\n -> isDi) Text
 --                |
 --                |
---                where 
+--                where
 
 findVariable :: [Char] -> Char
 findVariable x = head (dropWhile (not . isLetter) x)
@@ -209,11 +215,8 @@ parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
 
 monomial :: [Char] -> Moni
 monomial x | length aux == 1            = Moni coef [('_',0)]
-           | length aux == 2            = Moni coef [(variable,1)]
-           | otherwise                  = Moni coef [(variable, degree)]
+           | otherwise                  = Moni coef (findVars x)
           where coef     = parseNum (findCoef aux)
-                variable = findVariable aux
-                degree   = parseNum (findDegree aux)
                 aux      = filterMoni x
 
 -- Parses a polinomial from a string
@@ -224,11 +227,12 @@ monomial x | length aux == 1            = Moni coef [('_',0)]
 
 polinomial :: [Char] -> Poli
 polinomial []   = []
-polinomial (x:xs) | first == '-'                = (monomial (first : aux)) : polinomial (dropWhile (\n -> n /= '+' || n /= '-') filteredString)
-                  | otherwise                   = (monomial aux) :  polinomial (dropWhile (\n -> n /= '+' || n /= '-') filteredString)
+polinomial (x:xs) | first == '-'                = (monomial (first : aux)) : polinomial next
+                  | otherwise                   = (monomial aux) :  polinomial next
                   where filteredString = filter (\n -> (n /= ' ')) (x:xs)
                         first = head filteredString
-                        aux = takeWhile (\n -> n /='+' || n /= '-') filteredString
+                        aux = takeWhile (\n -> n /='+' && n /= '-') filteredString
+                        next = drop 1 (dropWhile (\n -> n /= '+' && n /= '-') filteredString)
 
 -- Test Cases
 a = (Moni 2 [('x', 3)])
