@@ -15,12 +15,9 @@ import Data.Text (splitOn)
 data Moni = Moni { coef :: Int, vars :: [(Char,Int)]} deriving (Show, Ord, Eq)
 type Poli = [Moni]
 
-wordsWhen :: (Char -> Bool) -> String -> [String]
-wordsWhen p s = case dropWhile p s of
-    "" -> []
-    s' -> w : wordsWhen p s''
-            where (w, s'') = break p s'
-
+maxElem :: Ord a => [a] -> a
+maxElem [x] = x
+maxElem (x:y:xs) = maxElem ((if x >= y then x else y):xs)
 
 tellVars :: [(Char,Int)] -> String
 tellVars [] = ""
@@ -47,10 +44,7 @@ tellPoli :: Poli -> String
 tellPoli [] = ""
 tellPoli [x] | coeficient x == 0        = ""
              | otherwise                = tellMoni x
-tellPoli [x,y] | coeficient b == 0      = tellMoni a
-               | coeficient a == 0      = tellMoni b
-               | otherwise              = tellMoni a ++ " + " ++ tellMoni b
-               where [a, b] = sortPoli [x, y]
+
 tellPoli (x:xs) | coeficient a == 0     = "" ++ tellPoli ab
                 | otherwise             = tellMoni a ++ " + " ++ tellPoli ab
                where (a:ab) = sortPoli (x:xs)
@@ -62,14 +56,14 @@ compareMoni x1 x2    | degX1 > degX2                    = LT
                      | coefX1 < coefX2                  = LT
                      | coefX1 > coefX2                  = GT
                      | varX1 < varX2                    = LT
-                     | varX1 < varX2                    = GT
+                     | varX1 > varX2                    = GT
                      | otherwise                        = EQ
-                     where degX1  = degree x1
-                           degX2  = degree x2
+                     where degX1  = maxElem (degree x1)
+                           degX2  = maxElem (degree x2)
                            coefX1 = coeficient x1
                            coefX2 = coeficient x2
-                           varX1  = variable x1
-                           varX2  = variable x2
+                           varX1  = maxElem (variable x1)
+                           varX2  = maxElem (variable x2)
 
 -- compareMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | z1 > z2                               = LT
 --                                                      |
@@ -88,21 +82,24 @@ compareVars (x1,y1) (x2,y2) | x1 > x2 = GT
                             | x1 < x2 = LT
                             | otherwise = EQ
 
-degree :: Moni -> Int
-degree (Moni _ [(_,x)]) = x
+degree :: Moni -> [Int]
+degree (Moni x l) = [snd y | y <- l]
 
-variable :: Moni -> Char
-variable (Moni _ [(x,_)]) = x
+variable :: Moni -> [Char]
+variable (Moni x l) = [fst y | y <- l]
 
 coeficient :: Moni -> Int
-coeficient (Moni x [(_,_)]) = x
+coeficient (Moni x l) = x
 
-mergePoli :: Poli -> Poli -> Poli
-mergePoli [] [] = []
-mergePoli x [] = x
-mergePoli [] x = x
-mergePoli (x:xs) (y:ys) = x : y : mergePoli xs ys
+merge :: [a] -> [a] -> [a]
+merge [] [] = []
+merge x [] = x
+merge [] x = x
+merge (x:xs) (y:ys) = x : y : merge xs ys
 
+sortVars :: [(Char,Int)] -> [(Char,Int)]
+sortVars [] = []
+sortVars x = sortBy(\(x1,y1) (x2,y2) -> compareVars (x1,y1) (x2,y2)) x
 
 sortPoli :: Poli -> Poli
 sortPoli [] = []
@@ -129,7 +126,7 @@ sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (y1 == y2) && (z1 == z2) =
                                                     | otherwise = error "Couldn't sum these monomials"
 
 sumAuxPoli :: Poli -> Poli -> Poli
-sumAuxPoli (x:xs) (y:ys) = internalSum (mergePoli (x:xs) (y:ys))
+sumAuxPoli (x:xs) (y:ys) = internalSum (merge (x:xs) (y:ys))
 
 
 sumPoli :: Poli -> Poli -> String
@@ -139,11 +136,13 @@ sumPoli (x:xs) (y:ys) = tellPoli (sumAuxPoli (x:xs) (y:ys))
 
 
 
-prodAuxVars :: (Char,Int) -> (Char,Int) -> (Char,Int)
-prodAuxVars (x1,y1) (x2,y2) | x1 == x2 = (x1,y1+y2)
+prodAuxVars :: [(Char,Int)] -> [(Char,Int)]
+prodAuxVars [x] = [x]
+prodAuxVars (x:y:xs) | (fst x) == (fst y) = prodAuxVars ((fst x,snd x + snd y) : xs)
+                     | otherwise = [x] ++ prodAuxVars (y:xs)
 
 prodVars :: [(Char,Int)] -> [(Char,Int)] -> [(Char,Int)]
-prodVars p1 p2 = [ prodAuxVars (x1,y1) (x2,y2) | (x1,y1) <- p1, (x2,y2) <- p2, x1 == x2]
+prodVars l1 l2 = prodAuxVars (sortVars (merge l1 l2))
 
 prodMoni :: Moni -> Moni -> Moni
 prodMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 * x2) (prodVars vars1 vars2))
@@ -156,13 +155,21 @@ prodPoli l1 l2 = tellPoli (internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2
 -------------------------------------------------------------------
 --d)
 
-derivMoni :: Moni -> Moni
-derivMoni (Moni _ [(x,0)]) = Moni 0 [(x,0)]
-derivMoni (Moni x [(y,z)]) = Moni (x * z) [(y,z-1)]
+--derivAuxMoni :: Char -> [(Char,Int)] -> [(Char,Int)]
+--derivAuxMoni _ [] = []
+--derivAuxMoni var (x:xs) | fst x == var = x : deri
 
-derivPoli :: Poli -> Poli
-derivPoli [] = []
-derivPoli l = [derivMoni x | x <- l]
+derivMoni :: Char -> Moni -> Moni
+derivMoni var (Moni coef vars ) | filteredVars == [] = (Moni 0 [('_',0)])
+                                | otherwise = (Moni coefAux [(varAux,degreeAux)])
+                                 where filteredVars = filter (\(y,z) ->  y == var) vars
+                                       coefAux = coef * (snd (head filteredVars))
+                                       varAux = fst (head filteredVars)
+                                       degreeAux = (snd (head filteredVars)) - 1
+
+derivPoli :: Char -> Poli -> Poli
+derivPoli x [] = []
+derivPoli x l = filter (\x -> coeficient x /= 0) [derivMoni x y | y <- l]
 
 -------------------------------------------------------------------
 --parseString para polinomio
