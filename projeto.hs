@@ -16,37 +16,37 @@ type Poli = [Moni]
 
 tellVars :: [(Char,Int)] -> String
 tellVars [] = ""
-tellVars [x] | snd x == 0 = ""
-             | snd x == 1 = [fst x]
-             | otherwise = [fst x] ++ "^" ++ show (snd x)
+tellVars [x] | snd x == 0                   = ""
+             | snd x == 1                   = [fst x]
+             | otherwise                    = [fst x] ++ "^" ++ show (snd x)
 tellVars (x:xs) = "(" ++ [fst x] ++ "^" ++ show (snd x) ++ ")*" ++ tellVars xs --acontece 2*(x^2)*(y)*z por ex.
 
 tellMoni :: Moni -> String
-tellMoni (Moni {coef = c, vars = v}) | c == 0 = "0"
-                                     | c == 1 = tellVars v
-                                     | c < 0 && (tellVars v /= "" )= "(" ++ show c ++ ")*" ++ tellVars v
-                                     | c < 0 && (tellVars v == "") = "(" ++ show c ++ ")"
-                                     | c > 0 && (tellVars v == "") = show c
-                                     | otherwise = show c ++ "*" ++ tellVars v
+tellMoni (Moni {coef = c, vars = v}) | c == 0                       = "0"
+                                     | c == 1                       = tellVars v
+                                     | c < 0 && (tellVars v /= "" ) = "(" ++ show c ++ ")*" ++ tellVars v
+                                     | c < 0 && (tellVars v == "")  = "(" ++ show c ++ ")"
+                                     | c > 0 && (tellVars v == "")  = show c
+                                     | otherwise                    = show c ++ "*" ++ tellVars v
 
 tellPoli :: Poli -> String
 tellPoli [] = ""
-tellPoli [x] | coeficient x == 0 = ""
-             | otherwise = tellMoni x
-tellPoli [x,y] | coeficient y == 0 = tellMoni x
-               | coeficient x == 0 = tellMoni y
-               | otherwise = tellMoni x ++ " + " ++ tellMoni y
-tellPoli (x:xs) | coeficient x == 0 = "" ++ tellPoli xs
-                | otherwise = tellMoni x ++ " + " ++ tellPoli xs
+tellPoli [x] | coeficient x == 0        = ""
+             | otherwise                = tellMoni x
+tellPoli [x,y] | coeficient y == 0      = tellMoni x
+               | coeficient x == 0      = tellMoni y
+               | otherwise              = tellMoni x ++ " + " ++ tellMoni y
+tellPoli (x:xs) | coeficient x == 0     = "" ++ tellPoli xs
+                | otherwise             = tellMoni x ++ " + " ++ tellPoli xs
 
 compareMoni :: Moni -> Moni -> Ordering
-compareMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | z1 > z2 = LT
-                                                   | z1 < z2 = GT
-                                                   | (z1 == z2) && (y1 > y2) = LT
-                                                   | (z1 == z2) && (y1 < y2) = GT
-                                                   | (z1 == z2) && (y1 == y2) && (x1 > x2) = LT
-                                                   | (z1 == z2) && (y1 == y2) && (x1 < x2) = GT
-                                                   | otherwise = EQ
+compareMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | z1 > z2                               = LT
+                                                     | z1 < z2                               = GT
+                                                     | (z1 == z2) && (y1 > y2)               = LT
+                                                     | (z1 == z2) && (y1 < y2)               = GT
+                                                     | (z1 == z2) && (y1 == y2) && (x1 > x2) = LT
+                                                     | (z1 == z2) && (y1 == y2) && (x1 < x2) = GT
+                                                     | otherwise                             = EQ
 
 degree :: Moni -> Int
 degree (Moni _ [(_,x)]) = x
@@ -64,27 +64,27 @@ sortPoli x = sortBy (\(Moni x1 y1) (Moni x2 y2) -> compareMoni (Moni x1 y1) (Mon
 internalSum :: Poli -> Poli
 internalSum [] = []
 internalSum [x] = [x]
-internalSum (x:y:xs) | (variable x == variable y) && (degree x == degree y) = internalSum ([sumMoni x y] ++ xs)
-                     | otherwise = [x] ++ internalSum (y:xs)
+internalSum (x:y:xs) | (variable x == variable y) && (degree x == degree y) = internalSum (sumMoni x y : xs)
+                     | otherwise = x : internalSum (y:xs)
 
 normalizePoli :: Poli -> String
-normalizePoli [] = []
+normalizePoli []  = []
 normalizePoli [x] = tellMoni x
-normalizePoli x = tellPoli (internalSum (sortPoli x))
+normalizePoli x   = tellPoli (internalSum (sortPoli x))
 
 
 --------------------------------------------------------------------------------
 --b)
 
 sumMoni :: Moni -> Moni -> Moni
-sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
-                                             | otherwise = error "Couldn't sum these monomials"
+sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
+                                                    | otherwise = error "Couldn't sum these monomials"
 
 sumPoli :: Poli -> Poli -> Poli
 sumPoli [] [] = []
 sumPoli [] x = x
 sumPoli x [] = x
-sumPoli (x:xs) (y:ys) | (variable x == variable y) && (degree x == degree y) = [sumMoni x y] ++ sumPoli xs ys
+sumPoli (x:xs) (y:ys) | (variable x == variable y) && (degree x == degree y) = sumMoni x y : sumPoli xs ys
                       | otherwise = sumPoli (x:xs) ys ++ sumPoli xs (y:ys)
 
 --------------------------------------------------------------------------------
@@ -95,16 +95,16 @@ prodMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)]) | y1 == y2 = (Moni (x1 * x2) [
                                                   | otherwise = (Moni (x1 * x2) [(y1,z1),(y2,z2)])
 
 prodPoli :: Poli -> Poli -> String
-prodPoli [] _ = []
-prodPoli _ [] = []
+prodPoli [] _  = []
+prodPoli _ []  = []
 prodPoli l1 l2 = tellPoli (internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2]))
 
 -------------------------------------------------------------------
 --d)
 
 derivMoni :: Moni -> Moni
-derivMoni (Moni _ [(x,0)]) = (Moni 0 [(x,0)] )
-derivMoni (Moni x [(y,z)]) = (Moni (x * z) [(y,z-1)])
+derivMoni (Moni _ [(x,0)]) = Moni 0 [(x,0)]
+derivMoni (Moni x [(y,z)]) = Moni (x * z) [(y,z-1)]
 
 derivPoli :: Poli -> Poli
 derivPoli [] = []
@@ -122,28 +122,28 @@ filterMoni = filter (\x -> isDigit x || isLetter x)
 findCoef :: [Char] -> [Int]
 findCoef x = [digitToInt y | y <- takeWhile isDigit x]
 
---find the degree of the monomial
+--finds the degree of the monomial
 findDegree :: [Char] -> [Int]
 findDegree x = reverse [digitToInt y | y <- takeWhile isDigit (reverse x)]
 
 findVariable :: [Char] -> Char
-findVariable x = head (dropWhile (\n -> not (isLetter n)) x)
+findVariable x = head (dropWhile (not . isLetter) x)
 
---parse a list of ints to an int
+--parses a list of ints to an int
 parseNum :: [Int] -> Int
 parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
 
 monomial :: [Char] -> Moni
-monomial x | length aux == 1 = (Moni coef [('_',0)])
-           | length aux == 2 = (Moni coef [(variable,1)])
-           | otherwise = (Moni coef [(variable, degree)])
+monomial x | length aux == 1 = Moni coef [('_',0)]
+           | length aux == 2 = Moni coef [(variable,1)]
+           | otherwise = Moni coef [(variable, degree)]
           where coef = parseNum (findCoef aux)
                 variable = findVariable aux
                 degree = parseNum (findDegree aux)
                 aux = filterMoni x
 
 polinomial :: [Char] -> Poli
-polinomial [] = []
+polinomial []   = []
 polinomial (x:xs) = [monomial ( takeWhile (\n -> n /= ' ') (dropWhile (\n -> (n == ' ') || (n == '+')) (x:xs)))] ++ polinomial (dropWhile (\n -> (n /= ' ') || (n /= '+')) xs)
 
 main = do
