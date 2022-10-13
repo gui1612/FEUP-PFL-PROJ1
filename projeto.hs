@@ -3,6 +3,9 @@ import Data.Char (isDigit, digitToInt, isLetter)
 import Data.List (sortBy)
 import Data.Text (splitOn)
 
+import DataType
+import Sum
+
 --module Main where
 
 --  main :: IO()
@@ -11,30 +14,6 @@ import Data.Text (splitOn)
 --    putStrLn poli
 --------------------------------------------------------------------------------
 --General functions, data and a)
-
-data Moni = Moni { coef :: Int, vars :: [(Char,Int)]} deriving (Show, Ord, Eq)
-type Poli = [Moni]
-
-maxElem :: Ord a => [a] -> a
-maxElem [x] = x
-maxElem (x:y:xs) = maxElem ((if x >= y then x else y):xs)
-
-tellVars :: [(Char,Int)] -> String
-tellVars [] = ""
-tellVars [x] | snd x == 0                   = ""
-             | snd x == 1                   = [fst x]
-             | otherwise                    = [fst x] ++ "^" ++ show (snd x)
-tellVars (x:xs) | snd x == 1 = [fst x] ++ "*" ++ tellVars xs --acontece 2*(x^2)*(y)*z por ex.
-                | snd x > 1 = [fst x] ++ "^" ++ show (snd x) ++ "*" ++ tellVars xs
-
-tellMoni :: Moni -> String
-tellMoni (Moni {coef = c, vars = v}) | c == 0                       = "0"
-                                     | c == 1                       = vars
-                                     | c < 0 && (vars /= "" )       = "(" ++ show c ++ ")*" ++ vars
-                                     | c < 0 && (vars == "")        = "(" ++ show c ++ ")"
-                                     | c > 0 && (vars == "")        = show c
-                                     | otherwise                    = show c ++ "*" ++ vars
-                                     where vars = tellVars v
 
 tellPoli :: Poli -> String
 -- tellPoli [] = ""
@@ -105,17 +84,34 @@ sortPoli :: Poli -> Poli
 sortPoli [] = []
 sortPoli x = sortBy (\(Moni x1 y1) (Moni x2 y2) -> compareMoni (Moni x1 y1) (Moni x2 y2)) x
 
+normalizeVars :: [(Char,Int)] -> [(Char,Int)]
+normalizeVars [] = []
+normalizeVars [x] = [x]
+normalizeVars (x:y:xs) | fst x1 == fst y1 = (fst x1, snd x1 + snd y1) : (normalizeVars xs1)
+                       | otherwise = x1 : y1 : (normalizeVars xs1)
+                       where (x1:y1:xs1) = sortVars (x:y:xs)
+
+normalizeMoni :: Moni -> Moni
+normalizeMoni (Moni coef vars) = (Moni coef (normalizeVars vars))
 
 internalSum :: Poli -> Poli
 internalSum [] = []
 internalSum [x] = [x]
-internalSum (x:y:xs) | (variable x == variable y) && (degree x == degree y) = internalSum (sumMoni x y : xs)
-                     | otherwise = x : internalSum (y:xs)
+internalSum (x:y:xs) | (variable x1 == variable y1) && (degree x1 == degree y1) = internalSum (sumMoni x1 y1 : xs1)
+                     | otherwise = x1 : internalSum (y1:xs1)
+                     where (x1:y1:xs1) = sortPoli (x:y:xs)
 
-normalizePoli :: Poli -> String
+normalizeAuxPoli :: Poli -> Poli
+normalizeAuxPoli (x:xs) | coeficient aux == 0 = [] ++ (normalizeAuxPoli xs)
+                        | otherwise = aux : (normalizeAuxPoli xs)
+                        where aux = normalizeMoni x
+
+normalizePoli :: Poli -> Poli
 normalizePoli []  = []
-normalizePoli [x] = tellMoni x
-normalizePoli x   = tellPoli (internalSum (sortPoli x))
+normalizePoli [x] | coeficient x == 0 = []
+                  | otherwise = [normalizeMoni x]
+normalizePoli l = internalSum aux
+                     where aux = normalizeAuxPoli l
 
 
 --------------------------------------------------------------------------------
