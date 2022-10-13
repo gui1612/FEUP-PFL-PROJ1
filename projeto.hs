@@ -125,8 +125,8 @@ sumAuxPoli :: Poli -> Poli -> Poli
 sumAuxPoli (x:xs) (y:ys) = internalSum (merge (x:xs) (y:ys))
 
 
-sumPoli :: Poli -> Poli -> String
-sumPoli (x:xs) (y:ys) = tellPoli (sumAuxPoli (x:xs) (y:ys))
+sumPoli :: Poli -> Poli -> Poli
+sumPoli (x:xs) (y:ys) = sumAuxPoli (x:xs) (y:ys)
 --------------------------------------------------------------------------------
 --c)
 
@@ -143,10 +143,10 @@ prodVars l1 l2 = prodAuxVars (sortVars (merge l1 l2))
 prodMoni :: Moni -> Moni -> Moni
 prodMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 * x2) (prodVars vars1 vars2))
 
-prodPoli :: Poli -> Poli -> String
+prodPoli :: Poli -> Poli -> Poli
 prodPoli [] _  = []
 prodPoli _ []  = []
-prodPoli l1 l2 = tellPoli (internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2]))
+prodPoli l1 l2 = internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2])
 
 -------------------------------------------------------------------
 --d)
