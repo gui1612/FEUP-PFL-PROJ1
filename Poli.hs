@@ -8,6 +8,7 @@ import Moni
 -- newtype Poli = Poli { moni :: [Moni] }
 type Poli = [Moni]
 
+
 merge :: [a] -> [a] -> [a]
 merge [] [] = []
 merge x [] = x
@@ -34,8 +35,9 @@ internalSum (x:y:xs) | (variable x1 == variable y1) && (degree x1 == degree y1) 
                     where (x1:y1:xs1) = sortPoli (x:y:xs)
 
 normalizeAuxPoli :: Poli -> Poli
+normalizeAuxPoli [] = []
 normalizeAuxPoli (x:xs) | coeficient aux == 0   = normalizeAuxPoli xs
-                       | otherwise             = aux : normalizeAuxPoli xs
+                        | otherwise             = aux : normalizeAuxPoli xs
                        where aux               = normalizeMoni x
 
 normalizePoli :: Poli -> Poli

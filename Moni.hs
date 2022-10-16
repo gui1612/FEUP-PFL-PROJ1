@@ -5,13 +5,11 @@ import Vars
 data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
 
 instance Show Moni where
-    show (Moni {coef = c, vars = v})                 | c == 0                       = "0"
-                                                     | c == 1                       = vars
-                                                     | c < 0 && (vars /= "" )       = "(" ++ show c ++ ")*" ++ vars
-                                                     | c < 0 && (vars == "")        = "(" ++ show c ++ ")"
-                                                     | c > 0 && (vars == "")        = show c
-                                                     | otherwise                    = show c ++ "*" ++ vars
-                                                     where vars = show v
+   show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
+                                                    | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
+                                                    | c > 0 && (aux == "")        = show c
+                                                    | otherwise                    = show c ++ aux
+                                                    where aux = tellVars v
 
 
 degree :: Moni -> [Int]
@@ -61,7 +59,10 @@ parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
 
 --parses a string of monomial to the monomial data type
 monomial :: [Char] -> Moni
-monomial x | length aux == 1            = Moni coef [('_',0)]
-           | otherwise                  = Moni coef (findVars x)
-           where coef     = parseNum (findCoef aux)
+monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1)]
+           | (length aux == 1) && isDigit (head x)           = Moni coef [('_',0)]
+           | null coefAux                                    = Moni 1 (findVars x)
+           | otherwise                                       = Moni coef (findVars x)
+           where coef     = parseNum coefAux
                  aux      = filterMoni x
+                 coefAux  = findCoef aux
