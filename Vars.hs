@@ -58,7 +58,11 @@ findVars x    | onlyDigitsMoni == x        = [('_',0)]
                     digitAux = takeWhile (/= '*') filteredMoni
                     next = drop 1 (dropWhile (/= '*') x )
                     digitNext = drop 1 (dropWhile (/= '*') filteredMoni)
+<<<<<<< HEAD
                     onlyDigitsMoni = filter (\n -> isDigit n) x
+=======
+                    onlyDigitsMoni = filter isDigit x
+>>>>>>> 562b9de2d1a22015e2bbcabc3a037a7559e1d7b7
 
 findVariable :: [Char] -> Char
 findVariable x = head (dropWhile (not . isLetter) x)

@@ -4,12 +4,21 @@ import Vars
 
 data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq, Show)
 
+<<<<<<< HEAD
 --instance Show Moni where
 --    show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
 --                                                     | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
 --                                                     | c > 0 && (aux == "")        = show c
 --                                                     | otherwise                    = show c ++ aux
 --                                                     where aux = tellVars v
+=======
+instance Show Moni where
+   show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
+                                                    | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
+                                                    | c > 0 && (aux == "")        = show c
+                                                    | otherwise                    = show c ++ aux
+                                                    where aux = tellVars v
+>>>>>>> 562b9de2d1a22015e2bbcabc3a037a7559e1d7b7
 
 
 degree :: Moni -> [Int]

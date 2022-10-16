@@ -3,6 +3,7 @@ module Sum where
 import Poli
 
 sumAuxPoli :: Poli -> Poli -> Poli
+sumAuxPoli [] [] = []
 sumAuxPoli (x:xs) (y:ys) = internalSum (merge (x:xs) (y:ys))
 
 
