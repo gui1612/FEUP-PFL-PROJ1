@@ -23,7 +23,6 @@ variable (Moni x l) = [fst y | y <- l]
 coeficient :: Moni -> Int
 coeficient (Moni x l) = x
 
-
 -- TODO: !!Refactor!! (Ternary and use aux functions)
 compareMoni :: Moni -> Moni -> Ordering
 compareMoni x1 x2    | degX1 > degX2                    = LT
@@ -44,7 +43,8 @@ normalizeMoni :: Moni -> Moni
 normalizeMoni (Moni coef vars) = Moni coef (normalizeVars vars)
 
 sumMoni :: Moni -> Moni -> Moni
-sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
+sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (z1 == 0) && (z2 == 0) = (Moni (x1 + x2) [('_',0)])
+                                                    | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
                                                     | otherwise = error "Couldn't sum these monomials"
 
 --remove the '*' and the rest of the unnecessary chars
@@ -59,8 +59,9 @@ findCoef x = [digitToInt y | y <- takeWhile isDigit x]
 parseNum :: [Int] -> Int
 parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
 
+--parses a string of monomial to the monomial data type
 monomial :: [Char] -> Moni
 monomial x | length aux == 1            = Moni coef [('_',0)]
-        | otherwise                  = Moni coef (findVars x)
-       where coef     = parseNum (findCoef aux)
-             aux      = filterMoni x
+           | otherwise                  = Moni coef (findVars x)
+           where coef     = parseNum (findCoef aux)
+                 aux      = filterMoni x
