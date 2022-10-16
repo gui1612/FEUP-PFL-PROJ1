@@ -2,7 +2,6 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 import Data.Char (isDigit, digitToInt, isLetter)
-import Data.Text (splitOn)
 
 
 import Sum

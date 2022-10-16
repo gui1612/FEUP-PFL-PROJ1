@@ -25,7 +25,7 @@ executable proj
     main-is:          projeto.hs
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules: Deriv Moni Poli Prod Sum Vars
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

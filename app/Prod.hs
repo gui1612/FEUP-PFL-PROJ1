@@ -4,18 +4,8 @@ import Poli
 import Moni
 import Vars
 
-<<<<<<< HEAD
 prodAuxVars :: Vars -> Vars
-prodAuxVars [] = []
-prodAuxVars [x] = [x]
 prodAuxVars (x:y:xs) | fst x == fst y = prodAuxVars ((fst x,snd x + snd y) : xs)
-=======
-prodAuxVars :: [(Char,Int)] -> [(Char,Int)]
-prodAuxVars [] = []
-prodAuxVars [x] = [x]
-prodAuxVars (x:y:xs) | fst x == fst y = prodAuxVars ((fst x,snd x + snd y) : xs)
-                     | snd x == 0 = prodAuxVars
->>>>>>> 562b9de2d1a22015e2bbcabc3a037a7559e1d7b7
                      | otherwise = x : prodAuxVars (y:xs)
 
 prodVars :: Vars -> Vars -> Vars
