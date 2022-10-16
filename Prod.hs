@@ -4,12 +4,13 @@ import Poli
 import Moni
 import Vars
 
-prodAuxVars :: [(Char,Int)] -> [(Char,Int)]
+prodAuxVars :: Vars -> Vars
+prodAuxVars [] = []
 prodAuxVars [x] = [x]
-prodAuxVars (x:y:xs) | (fst x) == (fst y) = prodAuxVars ((fst x,snd x + snd y) : xs)
-                     | otherwise = [x] ++ prodAuxVars (y:xs)
+prodAuxVars (x:y:xs) | fst x == fst y = prodAuxVars ((fst x,snd x + snd y) : xs)
+                     | otherwise = x : prodAuxVars (y:xs)
 
-prodVars :: [(Char,Int)] -> [(Char,Int)] -> [(Char,Int)]
+prodVars :: Vars -> Vars -> Vars
 prodVars l1 l2 = prodAuxVars (sortVars (merge l1 l2))
 
 prodMoni :: Moni -> Moni -> Moni
