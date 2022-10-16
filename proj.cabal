@@ -13,7 +13,7 @@ version:            0.1.0.0
 
 -- The license under which the package is released.
 -- license:
-author:             Antoni0Ferreira
+author:             g602
 maintainer:         up202004735@up.pt
 
 -- A copyright notice.
@@ -22,7 +22,7 @@ maintainer:         up202004735@up.pt
 extra-source-files: CHANGELOG.md
 
 executable proj
-    main-is:          Main.hs
+    main-is:          projeto.hs
 
     -- Modules included in this executable, other than Main.
     -- other-modules:
