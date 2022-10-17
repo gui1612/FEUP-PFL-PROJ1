@@ -61,8 +61,11 @@ parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
 monomial :: [Char] -> Moni
 monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1)]
            | (length aux == 1) && isDigit (head x)           = Moni coef [('_',0)]
-           | null coefAux                                    = Moni 1 (findVars x)
-           | otherwise                                       = Moni coef (findVars x)
+           | null coefAux && vars /= []                      = Moni 1 vars
+           | null coefAux && vars == []                      = Moni 1 [('_',0)]
+           | not (null coefAux) && vars == []                = Moni coef [('_',0)]
+           | otherwise                                       = Moni coef vars
            where coef     = parseNum coefAux
                  aux      = filterMoni x
                  coefAux  = findCoef aux
+                 vars     = filter (\(y,z) -> z /= 0) (findVars x)

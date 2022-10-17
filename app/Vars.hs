@@ -44,9 +44,10 @@ normalizeVars (x:y:xs) | fst x1 == fst y1 = normalizeVars ((fst x1, snd x1 + snd
 -- Passar para o proximo elemento
 findAuxVars :: [Char] -> (Char,Int)
 findAuxVars x | length x == 1 = (head x,1)
-              | otherwise = (var,digitToInt degree)
+              | degree == 0 = ('_',degree)
+              | otherwise = (var,degree)
               where var = head x
-                    degree = last x
+                    degree = digitToInt (last x)
 
 findVars :: [Char] -> Vars
 findVars [] = []
