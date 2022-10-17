@@ -2,14 +2,14 @@ module Moni where
 import Data.Char (isDigit, digitToInt, isLetter)
 import Vars
 
-data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
+data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq, Show)
 
-instance Show Moni where
-   show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
-                                                    | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
-                                                    | c > 0 && (aux == "")        = show c
-                                                    | otherwise                    = show c ++ aux
-                                                    where aux = tellVars v
+--instance Show Moni where
+--   show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
+--                                                    | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
+--                                                    | c > 0 && (aux == "")        = show c
+--                                                    | otherwise                    = show c ++ aux
+--                                                    where aux = tellVars v
 
 
 
@@ -42,9 +42,8 @@ normalizeMoni :: Moni -> Moni
 normalizeMoni (Moni coef vars) = Moni coef (normalizeVars vars)
 
 sumMoni :: Moni -> Moni -> Moni
-sumMoni (Moni x1 [(y1, z1)]) (Moni x2 [(y2,z2)])    | (z1 == 0) && (z2 == 0) = (Moni (x1 + x2) [('_',0)])
-                                                    | (y1 == y2) && (z1 == z2) = (Moni (x1 + x2) [(y1,z1)])
-                                                    | otherwise = error "Couldn't sum these monomials"
+sumMoni (Moni x1 []) (Moni x2 []) = (Moni (x1+x2) [])
+sumMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 + x2) vars1) --test more
 
 --remove the '*' and the rest of the unnecessary chars
 filterMoni :: [Char] -> [Char]

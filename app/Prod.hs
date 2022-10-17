@@ -5,7 +5,11 @@ import Moni
 import Vars
 
 prodAuxVars :: Vars -> Vars
+prodAuxVars [] = []
+prodAuxVars [x] = [x]
 prodAuxVars (x:y:xs) | fst x == fst y = prodAuxVars ((fst x,snd x + snd y) : xs)
+                     | snd x == 0 = prodAuxVars ((fst y, snd y) : xs)
+                     | snd y == 0 = prodAuxVars ((fst x, snd x) : xs)
                      | otherwise = x : prodAuxVars (y:xs)
 
 prodVars :: Vars -> Vars -> Vars
