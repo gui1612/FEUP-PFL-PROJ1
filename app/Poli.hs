@@ -19,13 +19,26 @@ sortPoli :: Poli -> Poli
 sortPoli [] = []
 sortPoli x = sortBy (\(Moni x1 y1) (Moni x2 y2) -> compareMoni (Moni x1 y1) (Moni x2 y2)) x
 
+tellPoliAux :: Poli -> String
+tellPoliAux [] = ""
+tellPoliAux [x] | coeficient x == 0        = ""
+                | otherwise                = show x
+tellPoliAux (x:xs) | coeficient a == 0     = "" ++ next
+                   | next == ""     = show a
+                   | otherwise             = show a ++ " + " ++ next
+                   where (a:ab) = sortPoli (x:xs)
+                         next = tellPoliAux ab
+
 tellPoli :: Poli -> String
 tellPoli [] = ""
-tellPoli [x] | coeficient x == 0        = ""
-             | otherwise                = show x
-tellPoli (x:xs) | coeficient a == 0     = "" ++ tellPoli ab
-                | otherwise             = show a ++ " + " ++ tellPoli ab
-               where (a:ab) = sortPoli (x:xs)
+tellPoli l | sumCoefs l == 0 = "0"
+           | otherwise = tellPoliAux l
+
+
+sumCoefs :: Poli -> Int
+sumCoefs [] =  0
+sumCoefs [x] = coeficient x
+sumCoefs (x:xs) = coeficient x + sumCoefs xs
 
 internalSum :: Poli -> Poli
 internalSum [] = []
@@ -43,16 +56,19 @@ normalizeAuxPoli (x:xs) | coeficient aux == 0   = normalizeAuxPoli xs
 normalizePoli :: Poli -> Poli
 normalizePoli []  = []
 normalizePoli [x] | coeficient x == 0 = []
-                 | otherwise = [normalizeMoni x]
-normalizePoli l = internalSum aux
+                  | otherwise = [normalizeMoni x]
+normalizePoli l  = internalSum aux
                     where aux = normalizeAuxPoli l
 
 -- Parses a polinomial from a string
 polinomial :: [Char] -> Poli
 polinomial []   = []
-polinomial (x:xs) | first == '-'                = monomial (first : aux) : polinomial next
-               | otherwise                   = monomial aux :  polinomial next
-               where filteredString = filter (/= ' ') (x:xs)
-                     first = head filteredString
-                     aux = takeWhile (\n -> n /='+' && n /= '-') filteredString
-                     next = drop 1 (dropWhile (\n -> n /= '+' && n /= '-') filteredString)
+polinomial (x:xs) | first == '-'                = monomial (first : auxSign) : polinomial nextSign
+                  | first == '+'                = monomial auxSign : polinomial nextSign
+                  | otherwise                   = monomial aux :  polinomial next
+                  where filteredString = filter (/= ' ') (x:xs)
+                        first = head filteredString
+                        aux = takeWhile (\n -> n /='+' && n /= '-') filteredString
+                        auxSign = takeWhile (\n -> n /='+' && n /= '-') (drop 1 filteredString)
+                        next = dropWhile (\n -> n /= '+' && n /= '-') filteredString
+                        nextSign = dropWhile (\n -> n /= '+' && n /= '-') (drop 1 filteredString)

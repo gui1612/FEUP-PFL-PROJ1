@@ -51,15 +51,15 @@ findAuxVars x | length x == 1 = (head x,1)
 
 findVars :: [Char] -> Vars
 findVars [] = []
-findVars x    | onlyDigitsMoni == x        = [('_',0)]
-              | isDigit $ head x           = findAuxVars digitAux : findVars digitNext
-              | otherwise                 = findAuxVars aux : findVars next
+findVars x    | onlyDigitsMoni == x                  = [('_',0)]
+              | (isDigit $ head x) || head x == '-'    = findAuxVars digitAux : findVars digitNext
+              | otherwise                            = findAuxVars aux : findVars next
               where filteredMoni = drop 1 (dropWhile (/= '*') x)
                     aux = takeWhile (/= '*') x
                     digitAux = takeWhile (/= '*') filteredMoni
                     next = drop 1 (dropWhile (/= '*') x )
                     digitNext = drop 1 (dropWhile (/= '*') filteredMoni)
-                    onlyDigitsMoni = filter isDigit x
+                    onlyDigitsMoni = filter (\n -> isDigit n || n == '-') x
 
 findVariable :: [Char] -> Char
 findVariable x = head (dropWhile (not . isLetter) x)

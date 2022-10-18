@@ -2,14 +2,15 @@ module Moni where
 import Data.Char (isDigit, digitToInt, isLetter)
 import Vars
 
-data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq, Show)
+data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
 
---instance Show Moni where
---   show (Moni {coef = c, vars = v})                 | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")*" ++ aux
---                                                    | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
---                                                    | c > 0 && (aux == "")        = show c
---                                                    | otherwise                    = show c ++ aux
---                                                    where aux = tellVars v
+instance Show Moni where
+   show (Moni {coef = c, vars = v})     | c == 1                      = drop 1 aux 
+                                        | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")" ++ aux
+                                        | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
+                                        | c > 0 && (aux == "")        = show c
+                                        | otherwise                   = show c ++ aux
+                                        where aux = tellVars v
 
 
 
@@ -47,15 +48,17 @@ sumMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 + x2) vars1) --test more
 
 --remove the '*' and the rest of the unnecessary chars
 filterMoni :: [Char] -> [Char]
-filterMoni = filter (\x -> isDigit x || isLetter x)
+filterMoni = filter (\x -> isDigit x || isLetter x || x == '-')
 
 --find the coeficient of the monomial
-findCoef :: [Char] -> [Int]
-findCoef x = [digitToInt y | y <- takeWhile isDigit x]
+findCoef :: [Char] -> [Char]
+findCoef x = [y | y <- takeWhile (\n -> n == '-' || isDigit n ) x ]
 
 --parses a list of ints to an int
-parseNum :: [Int] -> Int
-parseNum = foldl (\acc x -> (if acc == 0 then acc + x else acc * 10 + x)) 0
+parseNum :: [Char] -> Int
+parseNum [] = 0
+parseNum l | head l /= '-' = foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 l
+           | otherwise = (-1) * (foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 (tail l))
 
 --parses a string of monomial to the monomial data type
 monomial :: [Char] -> Moni
