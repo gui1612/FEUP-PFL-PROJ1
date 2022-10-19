@@ -2,15 +2,15 @@ module Moni where
 import Data.Char (isDigit, digitToInt, isLetter)
 import Vars
 
-data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
+data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq, Show)
 
-instance Show Moni where
-   show (Moni {coef = c, vars = v})     | c == 1                      = drop 1 aux 
-                                        | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")" ++ aux
-                                        | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
-                                        | c > 0 && (aux == "")        = show c
-                                        | otherwise                   = show c ++ aux
-                                        where aux = tellVars v
+--instance Show Moni where
+--   show (Moni {coef = c, vars = v})     | c == 1                      = drop 1 aux
+--                                        | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")" ++ aux
+--                                        | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
+--                                        | c > 0 && (aux == "")        = show c
+--                                        | otherwise                   = show c ++ aux
+--                                        where aux = tellVars v
 
 
 

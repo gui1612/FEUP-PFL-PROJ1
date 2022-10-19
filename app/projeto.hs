@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 import Data.Char (isDigit, digitToInt, isLetter)
+import Data.Maybe (fromJust)
 
 
 import Sum
@@ -10,6 +11,7 @@ import Deriv
 import Poli
 import Moni
 import Vars
+import Tree
 --module Main where
 
 --  main :: IO()

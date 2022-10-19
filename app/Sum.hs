@@ -7,6 +7,6 @@ sumAuxPoli [] [] = []
 sumAuxPoli (x:xs) (y:ys) = internalSum (merge (x:xs) (y:ys))
 
 
-sumPoli :: Poli -> Poli -> String
+sumPoli :: Poli -> Poli -> Poli
 sumPoli [] [] = []
-sumPoli (x:xs) (y:ys) = tellPoli (sumAuxPoli (x:xs) (y:ys))
+sumPoli (x:xs) (y:ys) = (sumAuxPoli (x:xs) (y:ys))
