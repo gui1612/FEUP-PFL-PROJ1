@@ -63,6 +63,8 @@ parseInt tokens = Nothing
 parseCoef :: [Token] -> Maybe (Expr, [Token])
 parseCoef (IntTok n : restTokens) = Just (Coef n, restTokens)
 parseCoef (VarTok n : restTokens) = Just (Coef 1, (VarTok n : restTokens))
+parseCoef (NegTok : IntTok n : restTokens) = Just (Coef (-1 * n), restTokens)
+parseCoef (NegTok : VarTok n : restTokens) = Just (Coef (-1), (VarTok n : restTokens))
 parseCoef tokens = Nothing
 
 parseVars :: [Token] -> Maybe (Expr, [Token])
@@ -96,10 +98,20 @@ parseProdOrMoni tokens = case parseMoni tokens of
 parseSumOrProdOrMoni :: [Token] -> Maybe (Expr, [Token])
 parseSumOrProdOrMoni tokens = case parseProdOrMoni tokens of
                                 Just (expr1, (PlusTok : restTokens1)) ->
-                                  case parseProdOrMoni restTokens1 of
+                                  case parseSumOrProdOrMoni restTokens1 of
                                     Just (expr2, restTokens2) -> Just (Sum expr1 expr2, restTokens2)
                                     Nothing -> Nothing
+                                Just (expr3, (NegTok : restTokens3)) ->
+                                  case parseSumOrProdOrMoni (NegTok : restTokens3) of
+                                    Just (expr4, restTokens4) -> Just (Sum expr3 expr4, restTokens4)
+                                    Nothing -> Nothing
                                 result -> result
+
+parse :: [Token] -> Expr
+parse tokens =
+  case parseSumOrProdOrMoni tokens of
+    Just (expr, []) -> expr
+    _               -> error "Could not parse input"
 
 eval :: Expr -> Poli --fazer fromJust e fst
 eval (Monomial (Coef n) (Var (x,y))) = [(Moni n [(x,y)])]
@@ -120,7 +132,7 @@ parseSumOrProdOrInt :: [Token] -> Maybe (Expr, [Token])
 parseSumOrProdOrInt tokens
   = case parseProdOrInt tokens of
       Just (expr1, (PlusTok : restTokens1)) ->
-          case parseProdOrInt restTokens1 of
+          case parseSumOrProdOrInt restTokens1 of
             Just (expr2, restTokens2) -> Just (Sum expr1 expr2, restTokens2)
             Nothing                   -> Nothing
       result -> result    -- could be 'Nothing' or a valid expression
