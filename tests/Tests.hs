@@ -36,24 +36,24 @@ prop_normalizePoli2 = tellPoli poliEx2 == "2*x*y^2 + 3*x"
 
 
 -- Tests Polinomial sum
-prop_addPoli1  = (sumPoli poliEx2 poliEx3) == poli_res
-    where poli_res = polinomial "2*x*y^2 + y^2 + 8*x"
+prop_addPoli1  = tellPoli (sumPoli poliEx2 poliEx3) == poli_res
+    where poli_res = "y^2 + 2*x*y^2 + 8*x"
 
-prop_addPoli2  = (sumPoli poliEx poliEx2) == poli_res
-    where poli_res = polinomial "(-3)*x^3 + 2*x*y^2 + 5*y^2 + 7*x + 2"
+prop_addPoli2  = tellPoli (sumPoli poliEx poliEx2) == poli_res
+    where poli_res = "(-3)*x^3 + 2*x*y^2 + 5*y^2 + 7*x + 2"
 
-prop_addPoli3  = (sumPoli poliEx poliEx3) == poli_res
-    where poli_res = polinomial "(-3)*x^3 + 6*y^2 + 9*x + 2"
+prop_addPoli3  = tellPoli (sumPoli poliEx poliEx3) == poli_res
+    where poli_res = "(-3)*x^3 + 6*y^2 + 9*x + 2"
 
 -- Tests Polinomial multiplication
 
-prop_multPoli1 = tellPoli(normalizePoli (prodPoli poliEx poliEx2)) == poli_res
+prop_multPoli1 = tellPoli (normalizePoli (prodPoli poliEx poliEx2)) == poli_res
     where poli_res = "(-15)*x^4 + (-6)*x^4*y^2 + 6*x^4 + 10*x*y^4 + 2*x^2*y^2 + 3*x^2 + 4*x*y^2 + 6*x^2*y^2 + 9*x^2 + 15*x*y^2 + 6*x"
 
-prop_multPoli2 = tellPoli(normalizePoli (prodPoli poliEx2 poliEx3)) == poli_res
+prop_multPoli2 = tellPoli (normalizePoli (prodPoli poliEx2 poliEx3)) == poli_res
     where poli_res = "2*x*y^4 + 3*x*y^2 + 10*x^2*y^2 + 15*x^2"
 
-prop_multPoli3 = tellPoli(normalizePoli (prodPoli poliEx poliEx3)) == poli_res
+prop_multPoli3 = tellPoli (normalizePoli (prodPoli poliEx poliEx3)) == poli_res
     where poli_res = "(-25)*x^4 + 5*y^4 + 10*x^4 + (-3)*x^3*y^2 + x*y^2 + 2*y^2 + 3*x*y^2 + 20*x^2 + 25*x*y^2 + 10*x"
 
 -- Tests Polinomial Derivation
@@ -73,11 +73,11 @@ prop_derivation4 = tellPoli (derivPoli 'y' poliEx2) == poli_res
 prop_derivation5 = tellPoli (derivPoli 'y' poliEx3) == poli_res
     where poli_res = "2*y"
 
-prop_derivation6 = tellPoli (derivPoli 'y' poliEx3) == poli_res
+prop_derivation6 = tellPoli (derivPoli 'z' poliEx3) == poli_res
     where poli_res = ""
 
 -- Tests for operation order
-prop_operationOrder = tellPoli (normalizePoli p1) == "2*x + 10*x*y" -- If the operation order was wrong the sum would be made before the multiplication
+prop_operationOrder = tellPoli (normalizePoli (eval (parse ( lexer "2x + 2*x * 5*y")))) == "2*x + 10*x*y" -- If the operation order was wrong the sum would be made before the multiplication
     where p1 = polinomial "2*x + 2*x * 5*y"
 
 
@@ -88,9 +88,9 @@ main = do
     quickCheck prop_tellPoli
     quickCheck prop_normalizePoli1
     quickCheck prop_normalizePoli2
-    quickCheck prop_addPoli1
-    quickCheck prop_addPoli2
-    quickCheck prop_addPoli3
+    quickCheck prop_addPoli1  
+    quickCheck prop_addPoli2 
+    quickCheck prop_addPoli3 
     quickCheck prop_multPoli1
     quickCheck prop_multPoli2
     quickCheck prop_multPoli3
