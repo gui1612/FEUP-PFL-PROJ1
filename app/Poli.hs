@@ -5,10 +5,11 @@ module Poli where
 import Data.List (sortBy)
 import Moni
 
--- newtype Poli = Poli { moni :: [Moni] }
 type Poli = [Moni]
 
+--------------------------------------------------------------------------------
 
+--Auxiliary function that merges two list into one
 merge :: [a] -> [a] -> [a]
 merge [] [] = []
 merge x [] = x
@@ -72,3 +73,5 @@ polinomial (x:xs) | first == '-'                = monomial (first : auxSign) : p
                         auxSign = takeWhile (\n -> n /='+' && n /= '-') (drop 1 filteredString)
                         next = dropWhile (\n -> n /= '+' && n /= '-') filteredString
                         nextSign = dropWhile (\n -> n /= '+' && n /= '-') (drop 1 filteredString)
+
+--------------------------------------------------------------------------------
