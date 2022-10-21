@@ -16,10 +16,12 @@ merge x [] = x
 merge [] x = x
 merge (x:xs) (y:ys) = x : y : merge xs ys
 
+--Auxiliary function that sorts a polinomial
 sortPoli :: Poli -> Poli
 sortPoli [] = []
 sortPoli x = sortBy (\(Moni x1 y1) (Moni x2 y2) -> compareMoni (Moni x1 y1) (Moni x2 y2)) x
 
+--Auxiliary function that
 tellPoliAux :: Poli -> String
 tellPoliAux [] = ""
 tellPoliAux [x] | coeficient x == 0        = ""

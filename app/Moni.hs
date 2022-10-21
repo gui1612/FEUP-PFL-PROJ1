@@ -2,6 +2,8 @@ module Moni where
 import Data.Char (isDigit, digitToInt, isLetter)
 import Vars
 
+--------------------------------------------------------------------------------
+
 data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
 
 instance Show Moni where
@@ -55,21 +57,21 @@ sumMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 + x2) vars1)
 filterMoni :: [Char] -> [Char]
 filterMoni = filter (\x -> isDigit x || isLetter x || x == '-')
 
---find the Coeficient of the Monomial
+--Function that finds the Coeficient of the Monomial
 findCoef :: [Char] -> [Char]
 findCoef x = [y | y <- takeWhile (\n -> n == '-' || isDigit n ) x ]
 
---parses a list of char digits to an int
+--Parses a list of char digits to an int
 parseNum :: [Char] -> Int
 parseNum [] = 0
 parseNum l | head l /= '-' = foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 l --positive number
            | otherwise = (-1) * (foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 (tail l)) --negative number
 
---parses a string of monomial to the monomial data type
+--Auxiliary function that parses a String to a Monomial data type
 monomial :: [Char] -> Moni
-monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1)]
-           | (length aux == 1) && isDigit (head x)           = Moni coef [('_',0)]
-           | null coefAux && vars /= []                      = Moni 1 vars
+monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1)] --Monomial that only has a variables and degree 1
+           | (length aux == 1) && isDigit (head x)           = Moni coef [('_',0)] --Monomial that is only a digit
+           | null coefAux && vars /= []                      = Moni 1 vars --Monomial that only has variables, each one
            | null coefAux && vars == []                      = Moni 1 [('_',0)]
            | not (null coefAux) && vars == []                = Moni coef [('_',0)]
            | otherwise                                       = Moni coef vars
@@ -77,3 +79,5 @@ monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1
                  aux      = filterMoni x
                  coefAux  = findCoef aux
                  vars     = filter (\(y,z) -> z /= 0) (findVars x)
+
+--------------------------------------------------------------------------------

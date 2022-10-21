@@ -52,14 +52,6 @@ data Expr
   | Monomial Expr Expr
   deriving (Show)
 
-parseInt :: [Token] -> Maybe (Expr, [Token])
-parseInt (IntTok n : restTokens) = Just (IntLit n, restTokens)
-parseInt tokens = Nothing
-
---parseMoni :: [Token] -> Maybe (Expr, [Token])
---parseMoni (IntTok a : TimesTok b : VarTok c : DegreeTok d : IntTok e: restTokens) =
---            Just ()
-
 parseCoef :: [Token] -> Maybe (Expr, [Token])
 parseCoef (IntTok n : restTokens) = Just (Coef n, restTokens)
 parseCoef (VarTok n : restTokens) = Just (Coef 1, (VarTok n : restTokens))
@@ -117,22 +109,3 @@ eval :: Expr -> Poli --fazer fromJust e fst
 eval (Monomial (Coef n) (Var (x,y))) = [(Moni n [(x,y)])]
 eval (Sum expr1 expr2) = sumPoli (eval expr1) (eval expr2)
 eval (Mult expr1 expr2) = prodPoli (eval expr1) (eval expr2)
-
-parseProdOrInt :: [Token] -> Maybe (Expr, [Token])
-parseProdOrInt tokens
-  = case parseInt tokens of
-      Just (expr1, (TimesTok : restTokens1)) ->
-          case parseProdOrInt restTokens1 of
-            Just (expr2, restTokens2) -> Just (Mult expr1 expr2, restTokens2)
-            Nothing                   -> Nothing
-      result -> result     -- could be 'Nothing' or a valid expression
-
-
-parseSumOrProdOrInt :: [Token] -> Maybe (Expr, [Token])
-parseSumOrProdOrInt tokens
-  = case parseProdOrInt tokens of
-      Just (expr1, (PlusTok : restTokens1)) ->
-          case parseSumOrProdOrInt restTokens1 of
-            Just (expr2, restTokens2) -> Just (Sum expr1 expr2, restTokens2)
-            Nothing                   -> Nothing
-      result -> result    -- could be 'Nothing' or a valid expression
