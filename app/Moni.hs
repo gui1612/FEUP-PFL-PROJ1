@@ -32,10 +32,10 @@ coeficient (Moni x l) = x
 compareMoni :: Moni -> Moni -> Ordering
 compareMoni x1 x2    | degX1 > degX2                    = LT
                      | degX1 < degX2                    = GT
-                     | coefX1 < coefX2                  = GT
-                     | coefX1 > coefX2                  = LT
                      | varX1 < varX2                    = GT
                      | varX1 > varX2                    = LT
+                     | coefX1 < coefX2                  = GT
+                     | coefX1 > coefX2                  = LT
                      | otherwise                        = EQ
                      where degX1  = maximum (degree x1)
                            degX2  = maximum (degree x2)
