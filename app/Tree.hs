@@ -56,14 +56,6 @@ data Expr
   | Monomial Expr Expr --monomial leaf
   deriving (Show)
 
-parseInt :: [Token] -> Maybe (Expr, [Token])
-parseInt (IntTok n : restTokens) = Just (IntLit n, restTokens)
-parseInt tokens = Nothing
-
---parseMoni :: [Token] -> Maybe (Expr, [Token])
---parseMoni (IntTok a : TimesTok b : VarTok c : DegreeTok d : IntTok e: restTokens) =
---            Just ()
-
 --Parser that accepts a list of tokens and finds the Coeficient
 parseCoef :: [Token] -> Maybe (Expr, [Token])
 parseCoef (IntTok n : restTokens) = Just (Coef n, restTokens) --found a positive coeficient
