@@ -57,7 +57,7 @@ sumMoni (Moni x1 vars1) (Moni x2 vars2) = (Moni (x1 + x2) vars1)
 filterMoni :: [Char] -> [Char]
 filterMoni = filter (\x -> isDigit x || isLetter x || x == '-')
 
---Function that finds the Coeficient of the Monomial
+--Auxiliary function that finds the Coeficient of the Monomial
 findCoef :: [Char] -> [Char]
 findCoef x = [y | y <- takeWhile (\n -> n == '-' || isDigit n ) x ]
 
@@ -67,17 +67,17 @@ parseNum [] = 0
 parseNum l | head l /= '-' = foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 l --positive number
            | otherwise = (-1) * (foldl (\acc x -> (if acc == 0 then acc + digitToInt x else acc * 10 + digitToInt x)) 0 (tail l)) --negative number
 
---Auxiliary function that parses a String to a Monomial data type
+--Function that parses a String to a Monomial
 monomial :: [Char] -> Moni
 monomial x | (length aux == 1) && isLetter (head x)          = Moni 1 [(head x,1)] --Monomial that only has a variables and degree 1
            | (length aux == 1) && isDigit (head x)           = Moni coef [('_',0)] --Monomial that is only a digit
-           | null coefAux && vars /= []                      = Moni 1 vars --Monomial that only has variables, each one
-           | null coefAux && vars == []                      = Moni 1 [('_',0)]
-           | not (null coefAux) && vars == []                = Moni coef [('_',0)]
-           | otherwise                                       = Moni coef vars
+           | null coefAux && vars /= []                      = Moni 1 vars --Monomial that only has Vars and Coeficient 1
+           | null coefAux && vars == []                      = Moni 1 [('_',0)] --Monomial that doesn't have Vars and Coeficient 1
+           | not (null coefAux) && vars == []                = Moni coef [('_',0)] --Monomial that only has Vars and Coeficient /= 1
+           | otherwise                                       = Moni coef vars --Monomial that has Vars and Coeficient /= 1
            where coef     = parseNum coefAux
                  aux      = filterMoni x
                  coefAux  = findCoef aux
-                 vars     = filter (\(y,z) -> z /= 0) (findVars x)
+                 vars     = filter (\(y,z) -> z /= 0) (findVars x) --Vars of the Polinomial that doesn't have elements with the Degree 0
 
 --------------------------------------------------------------------------------
