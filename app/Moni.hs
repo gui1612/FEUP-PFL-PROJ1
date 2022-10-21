@@ -4,7 +4,7 @@ import Vars
 
 --------------------------------------------------------------------------------
 
-data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
+data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq, Show)
 
 instance Show Moni where
    show (Moni {coef = c, vars = v})     | c == 1                      = drop 1 aux
@@ -32,10 +32,10 @@ coeficient (Moni x l) = x
 compareMoni :: Moni -> Moni -> Ordering
 compareMoni x1 x2    | degX1 > degX2                    = LT
                      | degX1 < degX2                    = GT
-                     | coefX1 < coefX2                  = LT
-                     | coefX1 > coefX2                  = GT
-                     | varX1 < varX2                    = LT
-                     | varX1 > varX2                    = GT
+                     | coefX1 < coefX2                  = GT
+                     | coefX1 > coefX2                  = LT
+                     | varX1 < varX2                    = GT
+                     | varX1 > varX2                    = LT
                      | otherwise                        = EQ
                      where degX1  = maximum (degree x1)
                            degX2  = maximum (degree x2)
@@ -46,6 +46,7 @@ compareMoni x1 x2    | degX1 > degX2                    = LT
 
 --Function that Normalizes a Monomial
 normalizeMoni :: Moni -> Moni
+normalizeMoni (Moni 0 _) = (Moni 0 [('_',0)])
 normalizeMoni (Moni coef vars) = Moni coef (normalizeVars vars)
 
 --Function that Sums two Monomials

@@ -31,6 +31,8 @@ prodMoni (Moni x1 vars1) (Moni x2 vars2) = Moni (x1 * x2) (prodVars vars1 vars2)
 prodPoli :: Poli -> Poli -> Poli
 prodPoli [] _  = []
 prodPoli _ []  = []
-prodPoli l1 l2 = filter (\x -> coeficient x /= 0) (internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2]))
+prodPoli l1 l2 | aux == [] = [(Moni 0 [('_',0)])]
+               | otherwise = aux
+               where aux = filter (\x -> coeficient x /= 0) (internalSum (sortPoli [prodMoni x y| x <- l1, y <- l2]))
 
 --------------------------------------------------------------------------------

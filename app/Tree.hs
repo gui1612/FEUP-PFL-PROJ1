@@ -126,4 +126,8 @@ eval (Monomial (Coef n) (Var (x,y))) = [(Moni n [(x,y)])] --Monomial
 eval (Sum expr1 expr2) = sumPoli (eval expr1) (eval expr2) -- Sum of Monomials
 eval (Mult expr1 expr2) = prodPoli (eval expr1) (eval expr2) --Multiplication of Monomials
 
+--Function that parses a String into a Poli
+parsePoli :: String -> Poli
+parsePoli poli = eval (parse (lexer poli))
+
 --------------------------------------------------------------------------------
