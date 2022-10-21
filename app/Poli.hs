@@ -70,18 +70,3 @@ normalizePoli l | filterAux == [] = [(Moni 0 [('_',0)])] --After being filtered,
                 where aux       = normalizeAuxPoli l
                       sumAux    = internalSum aux --Internal sum of the polynomial
                       filterAux = filter (\x -> coeficient x /= 0) sumAux --Filters the elements of the polynomial that have coefficient 0
-
--- Parses a Polynomial from a string
---polinomial :: [Char] -> Poli
---polinomial []   = []
---polinomial (x:xs) | first == '-'                = monomial (first : auxSign) : polinomial nextSign --Negative element of the Polynomial
---                  | first == '+'                = monomial auxSign : polinomial nextSign --Positive element of the Polynomial (not the first)
---                  | otherwise                   = monomial aux :  polinomial next --Positive First element of the Polynomial
---                  where filteredString = filter (/= ' ') (x:xs) --removes the Spaces
---                        first = head filteredString
---                        aux = takeWhile (\n -> n /='+' && n /= '-') filteredString --First element of the Polynomial
---                        auxSign = takeWhile (\n -> n /='+' && n /= '-') (drop 1 filteredString) --First element of the Polynomial (starts with a sign - '-' or '+')
---                        next = dropWhile (\n -> n /= '+' && n /= '-') filteredString --Next element of the Polynomial
---                        nextSign = dropWhile (\n -> n /= '+' && n /= '-') (drop 1 filteredString) --Next element of the Polynomial (starts with a sign - '-' or '+')
-
---------------------------------------------------------------------------------

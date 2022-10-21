@@ -27,8 +27,3 @@ poliEx = [a, b, c, d, e, f, g]
 poliEx2 = "2*x*y^2 + 3*x"
 poliEx3 = "0*x + y^2 + 5*x"
 poliEx4 = "2*y^4 + 3*y^2 + 10*y^2 - 15"
-
-
-
--- main = do
---     print "asnkfsad"
