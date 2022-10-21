@@ -7,7 +7,7 @@ import Vars
 data Moni = Moni { coef :: Int, vars :: Vars} deriving (Ord, Eq)
 
 instance Show Moni where
-   show (Moni {coef = c, vars = v})     | c == 1                      = drop 1 aux
+   show (Moni {coef = c, vars = v})     | c == 1 && (aux /= "")       = drop 1 aux
                                         | c < 0 && (aux /= "" )       = "(" ++ show c ++ ")" ++ aux
                                         | c < 0 && (aux == "")        = "(" ++ show c ++ ")"
                                         | c > 0 && (aux == "")        = show c
