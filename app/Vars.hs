@@ -33,7 +33,8 @@ sortVars x = sortBy(\(x1,y1) (x2,y2) -> compareVars (x1,y1) (x2,y2)) x
 --their degrees)
 normalizeVars :: Vars -> Vars
 normalizeVars [] = []
-normalizeVars [x] = [x]
+normalizeVars [x] | snd x == 0 = [('_',0)] --When the Degree of the variable is 0
+                  | otherwise = [x]
 normalizeVars (x:y:xs) | fst x1 == fst y1 = normalizeVars ((fst x1, snd x1 + snd y1) : xs1)
                        | otherwise = x1 : y1 : normalizeVars xs1
                        where (x1:y1:xs1) = sortVars (x:y:xs)
