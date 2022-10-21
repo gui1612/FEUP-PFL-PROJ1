@@ -58,7 +58,7 @@ prop_multPoli3 = tellPoli (normalizePoli (prodPoli poliEx poliEx3)) == poli_res
 
 -- Tests Polinomial Derivation
 
-prop_derivation1 = tellPoli (derivPoli 'x' poliEx) == poli_res  --ERRADO
+prop_derivation1 = tellPoli (derivPoli 'x' poliEx) == poli_res
     where poli_res = "(-9)*x^2 + 4"
 
 prop_derivation2 = tellPoli (derivPoli 'y' poliEx) == poli_res
@@ -85,15 +85,15 @@ main = do
     quickCheck prop_poliParsing1
     quickCheck prop_poliParsing2
     quickCheck prop_poliParsing3
-    quickCheck prop_tellPoli        -- ERRADO
+    quickCheck prop_tellPoli
     quickCheck prop_normalizePoli1
     quickCheck prop_normalizePoli2
     quickCheck prop_addPoli1  
-    quickCheck prop_addPoli2        -- ERRADO
-    quickCheck prop_addPoli3        -- ERRADO
-    quickCheck prop_multPoli1       -- ERRADO
+    quickCheck prop_addPoli2
+    quickCheck prop_addPoli3
+    quickCheck prop_multPoli1
     quickCheck prop_multPoli2
-    quickCheck prop_multPoli3       -- ERRADO
+    quickCheck prop_multPoli3
     quickCheck prop_derivation1
     quickCheck prop_derivation2
     quickCheck prop_derivation3
