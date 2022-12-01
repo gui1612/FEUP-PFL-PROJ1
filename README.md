@@ -1,6 +1,6 @@
 # 1º Trabalho Prático de PFL
 
-- 2LEIC06 - Grupo 2
+- 3LEIC06 - Grupo 2
     - António Ferreira - up202004735
     - Guilherme Almeida - up202006137
 
